@@ -10,11 +10,13 @@ parser = reqparse.RequestParser()
 parser.add_argument('name',type=str)
 parser.add_argument('year',type=int)
 parser.add_argument('price',type=float)
+parser.add_argument('quantity',type=int)
+parser.add_argument('active',type=bool)
 
 @console.route("/")
 @console.route("/home")
 def home():
-    return "Catálogo de Consoles"
+    return "Catalogo de Consoles"
 
 class ConsoleAPI(Resource):
     def get(self,id=None,page=1):
@@ -35,7 +37,9 @@ class ConsoleAPI(Resource):
                     'id': con.id,
                     'name': con.name,
                     'year': con.year,
-                    'price': con.price
+                    'price': con.price,
+                    'active': con.active,
+                    'quantity': con.quantity
                 }
             return jsonify(res)
         if not consoles:
@@ -43,11 +47,15 @@ class ConsoleAPI(Resource):
 
     def post(self):
         args = parser.parse_args()
+        print("OIIII")
+        print(args)
         name = args['name']
         year = args['year']
         price = args['price']
+        quantity = args['quantity']
+        active = args['active']
 
-        con = Console(name,year,price)
+        con = Console(name,year,price,active,quantity)
         db.session.add(con)
         db.session.commit()
         res = { 'name' : con.name }
@@ -66,6 +74,9 @@ class ConsoleAPI(Resource):
         name = args['name']
         year = args['year']
         price = args['price']
+        active = args['active']
+        quantity = args['quantity']
+
         con.name = name
         con.year = year
         con.price = price
